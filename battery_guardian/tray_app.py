@@ -293,12 +293,12 @@ class BatteryTrayApp:
             root = tk.Tk()
             root.title("About Battery Health Guardian")
             root.configure(bg='#1a1a2e')
-            root.geometry("400x280")
+            root.geometry("400x310")
             root.resizable(False, False)
             
             root.update_idletasks()
             x = (root.winfo_screenwidth() - 400) // 2
-            y = (root.winfo_screenheight() - 280) // 2
+            y = (root.winfo_screenheight() - 310) // 2
             root.geometry(f"+{x}+{y}")
             
             main_frame = tk.Frame(root, bg='#1a1a2e', padx=30, pady=25)
@@ -322,12 +322,20 @@ class BatteryTrayApp:
             
             tk.Label(
                 main_frame,
+                text="Developed by Senthil",
+                font=("Segoe UI", 10, "italic"),
+                fg='#10b981',
+                bg='#1a1a2e'
+            ).pack(pady=(5, 0))
+            
+            tk.Label(
+                main_frame,
                 text="\nProtects your laptop battery by enforcing\nunplugging at optimal charge levels.\n\nKeeping battery between 20-80% extends\nits lifespan significantly.",
                 font=("Segoe UI", 10),
                 fg='#ffffff',
                 bg='#1a1a2e',
                 justify=tk.CENTER
-            ).pack(pady=15)
+            ).pack(pady=10)
             
             tk.Button(
                 main_frame,
