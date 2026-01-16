@@ -102,13 +102,13 @@ class SettingsDialog:
         self._window = tk.Tk()
         self._window.title("Settings - Battery Health Guardian")
         self._window.configure(bg='#1a1a2e')
-        self._window.geometry("500x600")
+        self._window.geometry("500x720")
         self._window.resizable(False, False)
         
         # Center on screen
         self._window.update_idletasks()
         x = (self._window.winfo_screenwidth() - 500) // 2
-        y = (self._window.winfo_screenheight() - 600) // 2
+        y = (self._window.winfo_screenheight() - 720) // 2
         self._window.geometry(f"+{x}+{y}")
         
         self._window.protocol("WM_DELETE_WINDOW", self._close)
@@ -291,7 +291,7 @@ class SettingsDialog:
     def _save(self) -> None:
         """Save settings and close dialog. Settings are applied immediately."""
         try:
-            # Collect all settings to update
+            # Collect all settings BEFORE any dialog operations
             new_settings = {
                 'battery_threshold': self._threshold_var.get(),
                 'check_interval_seconds': self._check_interval_var.get(),
@@ -301,44 +301,70 @@ class SettingsDialog:
                 'shutdown_countdown_seconds': self._shutdown_countdown_var.get(),
                 'enable_sounds': self._sounds_var.get(),
             }
+            auto_start = self._auto_start_var.get()
             
             # Update config - this saves to file AND notifies listeners
             # The tray app listens for config changes and applies them immediately
             self.config.update(new_settings)
             
             # Update Windows startup registry
-            set_startup_enabled(self._auto_start_var.get())
+            set_startup_enabled(auto_start)
             
             logger.info(f"Settings saved and applied: threshold={new_settings['battery_threshold']}%, "
                        f"check_interval={new_settings['check_interval_seconds']}s")
             
-            # Show brief confirmation
-            messagebox.showinfo("Settings Saved", 
-                              "Your settings have been saved and applied.\n\n"
-                              "Changes take effect immediately.")
+            # Close dialog first (no confirmation dialog - just close)
             self._close()
             
         except Exception as e:
             logger.error(f"Error saving settings: {e}")
-            messagebox.showerror("Error", f"Failed to save settings: {e}")
+            # Don't show messagebox - it causes threading issues
+            # Just log the error
     
     def _reset_defaults(self) -> None:
         """Reset settings to defaults."""
         from .config import DEFAULT_CONFIG
         
-        self._threshold_var.set(DEFAULT_CONFIG['battery_threshold'])
-        self._check_interval_var.set(DEFAULT_CONFIG['check_interval_seconds'])
-        self._warning_interval_var.set(DEFAULT_CONFIG['warning_interval_seconds'])
-        self._max_warnings_var.set(DEFAULT_CONFIG['max_warnings'])
-        self._max_time_var.set(DEFAULT_CONFIG['max_time_minutes'])
-        self._shutdown_countdown_var.set(DEFAULT_CONFIG['shutdown_countdown_seconds'])
-        self._sounds_var.set(DEFAULT_CONFIG['enable_sounds'])
-        
-        logger.info("Settings reset to defaults")
+        try:
+            if self._threshold_var:
+                self._threshold_var.set(DEFAULT_CONFIG['battery_threshold'])
+            if self._check_interval_var:
+                self._check_interval_var.set(DEFAULT_CONFIG['check_interval_seconds'])
+            if self._warning_interval_var:
+                self._warning_interval_var.set(DEFAULT_CONFIG['warning_interval_seconds'])
+            if self._max_warnings_var:
+                self._max_warnings_var.set(DEFAULT_CONFIG['max_warnings'])
+            if self._max_time_var:
+                self._max_time_var.set(DEFAULT_CONFIG['max_time_minutes'])
+            if self._shutdown_countdown_var:
+                self._shutdown_countdown_var.set(DEFAULT_CONFIG['shutdown_countdown_seconds'])
+            if self._sounds_var:
+                self._sounds_var.set(DEFAULT_CONFIG['enable_sounds'])
+            
+            logger.info("Settings reset to defaults (in dialog)")
+        except Exception as e:
+            logger.error(f"Error resetting defaults: {e}")
     
     def _close(self) -> None:
-        """Close the settings dialog."""
+        """Close the settings dialog with proper cleanup."""
         if self._window:
-            self._window.destroy()
-            self._window = None
+            try:
+                # Clear all Tkinter variables BEFORE destroying window
+                # This prevents "main thread is not in main loop" errors
+                self._threshold_var = None
+                self._check_interval_var = None
+                self._warning_interval_var = None
+                self._max_warnings_var = None
+                self._max_time_var = None
+                self._shutdown_countdown_var = None
+                self._auto_start_var = None
+                self._sounds_var = None
+                
+                # Quit mainloop first, then destroy
+                self._window.quit()
+                self._window.destroy()
+            except Exception as e:
+                logger.debug(f"Error during dialog cleanup: {e}")
+            finally:
+                self._window = None
         self._is_showing = False
