@@ -116,6 +116,13 @@ class BatteryMonitor:
             self._thread = None
         logger.info("Battery monitor stopped")
     
+    def update_check_interval(self, new_interval: int) -> None:
+        """Update the battery check interval (in seconds)."""
+        old_interval = self.check_interval
+        self.check_interval = max(5, new_interval)  # Minimum 5 seconds
+        if old_interval != self.check_interval:
+            logger.info(f"Battery check interval updated: {old_interval}s -> {self.check_interval}s")
+    
     def _monitor_loop(self) -> None:
         """Main monitoring loop."""
         while self._running:

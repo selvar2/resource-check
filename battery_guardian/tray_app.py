@@ -30,6 +30,9 @@ class BatteryTrayApp:
     """
     System tray application that displays battery status
     and provides user controls.
+    
+    Settings are loaded from persistent storage on startup and
+    applied immediately when changed via the Settings dialog.
     """
     
     def __init__(self):
@@ -43,14 +46,21 @@ class BatteryTrayApp:
         self._running = False
         self._current_status: Optional[BatteryStatus] = None
         self._settings_dialog: Optional[SettingsDialog] = None
+        self._current_threshold = self.config.get('battery_threshold', 95)
         
         # Set up callbacks
         self.battery_monitor.add_status_callback(self._on_battery_status)
         self.battery_monitor.add_threshold_callback(
-            self.config.get('battery_threshold', 95),
+            self._current_threshold,
             self._on_threshold_reached
         )
         self.alert_manager.set_state_callback(self._on_alert_state_change)
+        
+        # Register for config changes to apply settings immediately
+        self.config.add_change_listener(self._on_config_changed)
+        
+        logger.info(f"Loaded settings: threshold={self._current_threshold}%, "
+                   f"check_interval={self.config.get('check_interval_seconds')}s")
     
     def _create_icon_image(self, percent: int, is_charging: bool = False, 
                            is_alerting: bool = False) -> Image.Image:
@@ -141,6 +151,37 @@ class BatteryTrayApp:
     def _on_alert_state_change(self, state: AlertState) -> None:
         """Handle alert state change."""
         self._update_icon()
+    
+    def _on_config_changed(self, old_config: dict) -> None:
+        """
+        Handle configuration changes from the Settings dialog.
+        This is called automatically when settings are saved.
+        """
+        try:
+            # Update battery monitor check interval
+            new_interval = self.config.get('check_interval_seconds', 30)
+            old_interval = old_config.get('check_interval_seconds', 30)
+            if new_interval != old_interval:
+                self.battery_monitor.update_check_interval(new_interval)
+            
+            # Update threshold callback if threshold changed
+            new_threshold = self.config.get('battery_threshold', 95)
+            old_threshold = old_config.get('battery_threshold', 95)
+            if new_threshold != self._current_threshold:
+                # Remove old threshold callback and add new one
+                self.battery_monitor.remove_callback(self._on_threshold_reached)
+                self.battery_monitor.add_threshold_callback(new_threshold, self._on_threshold_reached)
+                self._current_threshold = new_threshold
+                logger.info(f"Battery threshold updated: {old_threshold}% -> {new_threshold}%")
+            
+            # Log other settings changes
+            if self.config.get('enable_sounds') != old_config.get('enable_sounds'):
+                logger.info(f"Sounds {'enabled' if self.config.get('enable_sounds') else 'disabled'}")
+            
+            logger.info("Configuration changes applied successfully")
+            
+        except Exception as e:
+            logger.error(f"Error applying config changes: {e}")
     
     def _update_icon(self) -> None:
         """Update the tray icon based on current status."""

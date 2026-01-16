@@ -193,13 +193,13 @@ class SettingsDialog:
         
         tk.Button(
             button_frame,
-            text="Save",
+            text="OK",
             font=("Segoe UI", 10, "bold"),
             fg='#ffffff',
             bg='#10b981',
             activebackground='#059669',
             relief=tk.FLAT,
-            padx=25,
+            padx=30,
             pady=10,
             cursor="hand2",
             command=self._save
@@ -289,10 +289,10 @@ class SettingsDialog:
                 ).pack(side=tk.LEFT)
     
     def _save(self) -> None:
-        """Save settings and close dialog."""
+        """Save settings and close dialog. Settings are applied immediately."""
         try:
-            # Update config
-            self.config.update({
+            # Collect all settings to update
+            new_settings = {
                 'battery_threshold': self._threshold_var.get(),
                 'check_interval_seconds': self._check_interval_var.get(),
                 'warning_interval_seconds': self._warning_interval_var.get(),
@@ -300,12 +300,22 @@ class SettingsDialog:
                 'max_time_minutes': self._max_time_var.get(),
                 'shutdown_countdown_seconds': self._shutdown_countdown_var.get(),
                 'enable_sounds': self._sounds_var.get(),
-            })
+            }
             
-            # Update Windows startup
+            # Update config - this saves to file AND notifies listeners
+            # The tray app listens for config changes and applies them immediately
+            self.config.update(new_settings)
+            
+            # Update Windows startup registry
             set_startup_enabled(self._auto_start_var.get())
             
-            logger.info("Settings saved")
+            logger.info(f"Settings saved and applied: threshold={new_settings['battery_threshold']}%, "
+                       f"check_interval={new_settings['check_interval_seconds']}s")
+            
+            # Show brief confirmation
+            messagebox.showinfo("Settings Saved", 
+                              "Your settings have been saved and applied.\n\n"
+                              "Changes take effect immediately.")
             self._close()
             
         except Exception as e:
