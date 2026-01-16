@@ -103,7 +103,7 @@ class SettingsDialog:
         self._window.title("Settings - Battery Health Guardian")
         self._window.configure(bg='#1a1a2e')
         self._window.geometry("500x720")
-        self._window.resizable(True, True)  # Allow user to resize window
+        self._window.resizable(False, False)
         
         # Center on screen
         self._window.update_idletasks()

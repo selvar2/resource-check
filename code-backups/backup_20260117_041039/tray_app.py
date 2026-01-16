@@ -229,7 +229,7 @@ class BatteryTrayApp:
             root.title("Battery Status")
             root.configure(bg='#1a1a2e')
             root.geometry("350x300")
-            root.resizable(True, True)  # Allow user to resize window
+            root.resizable(False, False)
             
             # Center on screen
             root.update_idletasks()
@@ -335,7 +335,7 @@ class BatteryTrayApp:
             root.title("About Battery Health Guardian")
             root.configure(bg='#1a1a2e')
             root.geometry("400x310")
-            root.resizable(True, True)  # Allow user to resize window
+            root.resizable(False, False)
             
             root.update_idletasks()
             x = (root.winfo_screenwidth() - 400) // 2

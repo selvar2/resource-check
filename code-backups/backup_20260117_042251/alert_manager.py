@@ -82,16 +82,14 @@ class AlertManager:
             )
             self._running = True
         
-        threshold = self.config.get('battery_threshold', 95)
-        logger.info(f"Starting alert sequence - Battery at {status.percent}% (threshold: {threshold}%)")
+        logger.info(f"Starting alert sequence - Battery at {status.percent}%")
         
         # Show initial toast notification
         self.dialog.show_warning(
             battery_percent=status.percent,
             warning_count=1,
             time_remaining_seconds=self.config.get('max_time_minutes', 5) * 60,
-            stage=WarningStage.TOAST,
-            threshold=threshold
+            stage=WarningStage.TOAST
         )
         
         # Start the escalation thread
@@ -188,13 +186,11 @@ class AlertManager:
         self.dialog.close_all()
         time.sleep(0.3)  # Brief pause for dialog cleanup
         
-        threshold = self.config.get('battery_threshold', 95)
         self.dialog.show_warning(
             battery_percent=battery_percent,
             warning_count=count,
             time_remaining_seconds=time_remaining,
             stage=self.state.current_stage,
-            threshold=threshold,
             on_dismiss=lambda: logger.debug(f"Warning {count} dismissed")
         )
     

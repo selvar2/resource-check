@@ -56,20 +56,19 @@ class WarningDialog:
         
     def show_warning(self, battery_percent: int, warning_count: int, 
                      time_remaining_seconds: int, stage: WarningStage,
-                     threshold: int = 95,
                      on_dismiss: Optional[Callable] = None) -> None:
         """Show warning dialog appropriate for the current stage."""
         
         if stage == WarningStage.TOAST:
-            self._show_toast(battery_percent, threshold)
+            self._show_toast(battery_percent)
         elif stage == WarningStage.POPUP:
             self._show_popup(battery_percent, warning_count, time_remaining_seconds, 
-                           can_dismiss=True, threshold=threshold, on_dismiss=on_dismiss)
+                           can_dismiss=True, on_dismiss=on_dismiss)
         elif stage == WarningStage.MODAL:
             self._show_popup(battery_percent, warning_count, time_remaining_seconds,
-                           can_dismiss=False, threshold=threshold, on_dismiss=None)
+                           can_dismiss=False, on_dismiss=None)
     
-    def _show_toast(self, battery_percent: int, threshold: int = 95) -> None:
+    def _show_toast(self, battery_percent: int) -> None:
         """Show Windows toast notification."""
         try:
             from winotify import Notification, audio
@@ -77,7 +76,7 @@ class WarningDialog:
             toast = Notification(
                 app_id="Battery Health Guardian",
                 title="🔋 Battery Health Alert",
-                msg=f"Battery at {battery_percent}% (above {threshold}% threshold). Unplug charger to extend battery lifespan.",
+                msg=f"Battery at {battery_percent}%. Unplug charger to extend battery lifespan.",
                 duration="long"
             )
             toast.set_audio(audio.Default, loop=False)
@@ -86,11 +85,10 @@ class WarningDialog:
         except Exception as e:
             logger.error(f"Failed to show toast notification: {e}")
             # Fallback to popup if toast fails
-            self._show_popup(battery_percent, 1, 300, can_dismiss=True, threshold=threshold)
+            self._show_popup(battery_percent, 1, 300, can_dismiss=True)
     
     def _show_popup(self, battery_percent: int, warning_count: int,
                     time_remaining_seconds: int, can_dismiss: bool,
-                    threshold: int = 95,
                     on_dismiss: Optional[Callable] = None) -> None:
         """Show popup warning dialog in a separate thread."""
         
@@ -105,9 +103,9 @@ class WarningDialog:
                 self._window.title("⚠️ BATTERY PROTECTION ALERT")
                 self._window.configure(bg=Colors.BG_DARK)
                 
-                # Window settings - height increased to show all content
+                # Window settings
                 window_width = 450
-                window_height = 550
+                window_height = 480
                 
                 # Center on screen
                 screen_width = self._window.winfo_screenwidth()
@@ -125,7 +123,7 @@ class WarningDialog:
                     self._window.attributes('-topmost', True)
                     self._window.protocol("WM_DELETE_WINDOW", lambda: self._close_warning(on_dismiss))
                 
-                self._window.resizable(True, True)  # Allow user to resize window
+                self._window.resizable(False, False)
                 
                 # Main container
                 main_frame = tk.Frame(self._window, bg=Colors.BG_DARK, padx=25, pady=20)
@@ -164,7 +162,7 @@ class WarningDialog:
                 progress_frame.pack_propagate(False)
                 
                 progress_width = int((battery_percent / 100) * (window_width - 60))
-                progress_color = Colors.ACCENT_DANGER if battery_percent >= threshold else Colors.SUCCESS
+                progress_color = Colors.ACCENT_DANGER if battery_percent >= 95 else Colors.SUCCESS
                 
                 progress_bar = tk.Frame(progress_frame, bg=progress_color, width=progress_width)
                 progress_bar.pack(side=tk.LEFT, fill=tk.Y)
@@ -177,10 +175,10 @@ class WarningDialog:
                     bg=progress_color if battery_percent > 10 else Colors.BORDER
                 ).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
                 
-                # Status with threshold info
+                # Status
                 tk.Label(
                     main_frame,
-                    text=f"Battery above {threshold}% threshold - Unplug Required",
+                    text="Status: CHARGING (Unplug Required)",
                     font=("Segoe UI", 11, "bold"),
                     fg=Colors.ACCENT,
                     bg=Colors.BG_DARK
@@ -214,7 +212,7 @@ class WarningDialog:
                 
                 tk.Label(
                     msg_frame,
-                    text=f"Continuous charging above {threshold}% degrades\nbattery health. Please unplug now.",
+                    text="Continuous charging above 95% degrades\nbattery health. Please unplug now.",
                     font=("Segoe UI", 11),
                     fg=Colors.TEXT_PRIMARY,
                     bg=Colors.BG_DARK,
@@ -317,7 +315,7 @@ class WarningDialog:
                 self._shutdown_window.attributes('-topmost', True)
                 self._shutdown_window.overrideredirect(False)
                 self._shutdown_window.protocol("WM_DELETE_WINDOW", lambda: None)
-                self._shutdown_window.resizable(True, True)  # Allow user to resize window
+                self._shutdown_window.resizable(False, False)
                 
                 # Try to focus and bring to front
                 self._shutdown_window.focus_force()
