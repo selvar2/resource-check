@@ -1,0 +1,12 @@
+{
+    "battery_threshold": 95,
+    "check_interval_seconds": 30,
+    "warning_interval_seconds": 30,
+    "max_warnings": 10,
+    "max_time_minutes": 5,
+    "shutdown_countdown_seconds": 60,
+    "auto_start_with_windows": true,
+    "enable_sounds": true,
+    "low_battery_alert": false,
+    "low_battery_threshold": 20
+}
