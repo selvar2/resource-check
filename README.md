@@ -2,6 +2,43 @@
 
 A Windows system tray application that monitors your laptop battery and enforces unplugging at 95% charge to extend battery lifespan.
 
+---
+
+## 🚀 Quick Start (Zero Installation Required!)
+
+### Option 1: One-Click Run (Recommended)
+```bash
+# Clone the repository
+git clone https://github.com/user/battery-health-guardian.git
+cd battery-health-guardian
+
+# Run immediately - no pip install needed!
+run.bat
+```
+
+### Option 2: Pre-built Executable
+Download `BatteryHealthGuardian.exe` from [Releases](releases/) and run directly.
+
+### Option 3: PowerShell
+```powershell
+.\run.ps1
+```
+
+**That's it!** No pip install, no Python setup, no configuration needed.
+
+---
+
+## 📦 What's Included
+
+| Component | Status | Description |
+|-----------|--------|-------------|
+| ✅ Vendored Dependencies | Bundled | All packages in `vendor/` folder |
+| ✅ Launcher Scripts | Included | `run.bat`, `run.ps1` |
+| ✅ Pre-built Executable | Available | `releases/BatteryHealthGuardian.exe` |
+| ⚡ Embedded Python | Optional | Run `download-python.bat` to add |
+
+---
+
 ## ✨ Features
 
 - **Real-time Battery Monitoring** - Continuously tracks battery percentage and charging state
@@ -11,45 +48,9 @@ A Windows system tray application that monitors your laptop battery and enforces
 - **Auto-Start** - Optionally starts with Windows
 - **Persistence** - Restarts automatically if terminated
 
-## 🚀 Quick Start
+---
 
-### Prerequisites
-
-- Windows 10 or 11
-- Python 3.8 or higher
-
-### Installation
-
-1. **Clone or download** this repository
-
-2. **Install dependencies:**
-   ```powershell
-   cd battery-health-guardian
-   python install.py
-   ```
-
-3. **Run the application:**
-   ```powershell
-   # With console (for debugging)
-   python run_guardian.py
-   
-   # Without console (recommended)
-   pythonw run_guardian.pyw
-   ```
-
-### Building Executable (Optional)
-
-To create a standalone `.exe` file:
-
-```powershell
-python build.py
-```
-
-The executable will be created at `dist/BatteryHealthGuardian.exe`
-
-## 📋 How It Works
-
-### Alert Stages
+## ⚠️ Alert Stages
 
 | Stage | Trigger | Action |
 |-------|---------|--------|
@@ -74,6 +75,26 @@ The executable will be created at `dist/BatteryHealthGuardian.exe`
                          [Shutdown System]
 ```
 
+---
+
+## 🖥️ System Tray Features
+
+- **Icon** - Shows battery percentage with color coding:
+  - 🟢 Green: Normal (20-94%)
+  - 🟠 Orange: High (95%+)
+  - 🔴 Red: Alert active
+  - ⚡ Lightning bolt: Charging
+
+- **Right-click Menu:**
+  - 📊 Battery Status - View current stats
+  - ⚙️ Settings - Configure the app
+  - 🔄 Check Now - Force immediate check
+  - ⏸️ Snooze - Pause alerts (5 min)
+  - ℹ️ About - App information
+  - ❌ Exit - Close the app
+
+---
+
 ## ⚙️ Configuration
 
 Settings are stored in `%APPDATA%\BatteryHealthGuardian\config.json`:
@@ -93,25 +114,81 @@ Settings are stored in `%APPDATA%\BatteryHealthGuardian\config.json`:
 
 Access settings via the system tray menu: **Right-click → Settings**
 
-## 🖥️ System Tray Features
+---
 
-- **Icon** - Shows battery percentage with color coding:
-  - 🟢 Green: Normal (20-94%)
-  - 🟠 Orange: High (95%+)
-  - 🔴 Red: Alert active
-  - ⚡ Lightning bolt: Charging
+## 📁 Repository Structure
 
-- **Right-click Menu:**
-  - 📊 Battery Status - View current stats
-  - ⚙️ Settings - Configure the app
-  - 🔄 Check Now - Force immediate check
-  - ⏸️ Snooze - Pause alerts (5 min)
-  - ℹ️ About - App information
-  - ❌ Exit - Close the app
+```
+battery-health-guardian/
+├── .github/
+│   └── workflows/
+│       └── build.yml           # CI/CD pipeline
+├── battery_guardian/           # Source code
+│   ├── __init__.py
+│   ├── main.py                 # Entry point
+│   ├── battery_monitor.py      # Battery monitoring
+│   ├── alert_manager.py        # Alert system
+│   ├── dialogs.py              # Warning dialogs
+│   ├── tray_app.py             # System tray
+│   ├── settings_dialog.py      # Settings UI
+│   ├── watchdog.py             # Auto-restart
+│   ├── config.py               # Configuration
+│   ├── config.json             # Default config
+│   └── requirements.txt        # Dependencies list
+├── vendor/                     # 📦 Pre-installed dependencies
+│   ├── psutil/
+│   ├── pystray/
+│   ├── PIL/
+│   └── winotify/
+├── releases/                   # Pre-built executables
+│   └── BatteryHealthGuardian.exe
+├── python-embedded/            # (Optional) Portable Python
+├── run.bat                     # ⭐ One-click launcher
+├── run.ps1                     # PowerShell launcher
+├── run-debug.bat               # Debug launcher (with console)
+├── setup.bat                   # Verify installation
+├── build.bat                   # Build executable
+├── install-dev.bat             # Rebuild vendor folder
+├── download-python.bat         # Download embedded Python
+├── .gitattributes
+├── .gitignore
+└── README.md
+```
 
-- **Double-click** - Show battery statistics
+---
 
-## 🔧 Windows Startup
+## 🔧 For Developers
+
+### Running from Source (with vendored deps)
+```bash
+# Dependencies are already in vendor/ - just run:
+run.bat
+
+# Or with debug output:
+run-debug.bat
+```
+
+### Rebuilding Vendor Dependencies
+```bash
+# Only if you need to update packages:
+install-dev.bat
+```
+
+### Building Standalone Executable
+```bash
+build.bat
+# Output: releases/BatteryHealthGuardian.exe
+```
+
+### Adding Embedded Python (Optional)
+```bash
+# Downloads portable Python - makes truly zero-dependency:
+download-python.bat
+```
+
+---
+
+## 🚀 Windows Startup
 
 ### Add to Startup
 
@@ -119,66 +196,20 @@ Access settings via the system tray menu: **Right-click → Settings**
 - Right-click tray icon → Settings → Check "Start with Windows"
 
 **Option 2: Manual**
-```powershell
-# Using the installer
-python install.py
-# Select 'y' when asked about Windows startup
-```
-
-**Option 3: Registry**
-- Press `Win+R`, type `shell:startup`
-- Create shortcut to `run_guardian.pyw`
+1. Press `Win+R`, type `shell:startup`
+2. Create shortcut to `run.bat`
 
 ### Remove from Startup
+- Right-click tray icon → Settings → Uncheck "Start with Windows"
 
-```powershell
-python install.py --uninstall
-```
-
-Or manually:
-1. Press `Win+R`, type `regedit`
-2. Navigate to `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run`
-3. Delete `BatteryHealthGuardian`
-
-## 📁 Project Structure
-
-```
-battery-health-guardian/
-├── battery_guardian/
-│   ├── __init__.py         # Package initialization
-│   ├── config.py           # Configuration management
-│   ├── battery_monitor.py  # Battery status monitoring
-│   ├── alert_manager.py    # Warning escalation logic
-│   ├── dialogs.py          # Warning dialog windows
-│   ├── tray_app.py         # System tray application
-│   ├── settings_dialog.py  # Settings UI
-│   ├── watchdog.py         # Auto-restart service
-│   ├── main.py             # Application entry point
-│   ├── config.json         # Default configuration
-│   └── requirements.txt    # Python dependencies
-├── run_guardian.py         # Launcher (with console)
-├── run_guardian.pyw        # Launcher (no console)
-├── watchdog_service.pyw    # Watchdog background service
-├── install.py              # Installation script
-├── build.py                # Executable builder
-└── README.md               # This file
-```
-
-## 🔒 Enforcement Mechanisms
-
-The app uses several mechanisms to ensure battery protection:
-
-1. **Modal Dialogs** - Cannot be closed in later stages
-2. **Always-on-Top** - Warning windows stay visible
-3. **Auto-Restart** - Watchdog restarts the app if killed
-4. **System Shutdown** - Ultimate enforcement after max warnings
+---
 
 ## 🐛 Troubleshooting
 
 ### App won't start
-- Ensure Python 3.8+ is installed
-- Run `pip install -r battery_guardian/requirements.txt`
-- Check logs at `%APPDATA%\BatteryHealthGuardian\battery_guardian.log`
+1. Run `setup.bat` to verify installation
+2. Try `run-debug.bat` to see error messages
+3. Check logs at `%APPDATA%\BatteryHealthGuardian\battery_guardian.log`
 
 ### No battery detected
 - This app requires a laptop with battery
@@ -186,11 +217,9 @@ The app uses several mechanisms to ensure battery protection:
 
 ### Notifications not showing
 - Check Windows notification settings
-- Ensure `winotify` is installed: `pip install winotify`
+- Focus Assist may be blocking notifications
 
-### High CPU usage
-- Increase `check_interval_seconds` in settings
-- Default 30 seconds should use < 1% CPU
+---
 
 ## 📝 Logs
 
@@ -198,6 +227,8 @@ Logs are stored at:
 ```
 %APPDATA%\BatteryHealthGuardian\battery_guardian.log
 ```
+
+---
 
 ## 🤝 Why 95%?
 
@@ -209,9 +240,13 @@ Lithium-ion batteries last longer when not kept at 100% charge. Keeping your bat
 - Avoid complete discharges
 - Store at 40-50% for extended periods
 
+---
+
 ## 📄 License
 
 MIT License - Feel free to use and modify!
+
+---
 
 ## 🙏 Acknowledgments
 
