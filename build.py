@@ -24,8 +24,12 @@ def build_executable():
         print("Installing PyInstaller...")
         subprocess.check_call([sys.executable, "-m", "pip", "install", "pyinstaller"])
     
+    # Check if icon exists
+    icon_path = Path('battery_guardian/icon.ico')
+    icon_setting = f"icon='{icon_path}'," if icon_path.exists() else "icon=None,"
+    
     # Create spec file content
-    spec_content = '''# -*- mode: python ; coding: utf-8 -*-
+    spec_content = f'''# -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
 
@@ -42,7 +46,7 @@ a = Analysis(
         'winotify',
     ],
     hookspath=[],
-    hooksconfig={},
+    hooksconfig={{}},
     runtime_hooks=[],
     excludes=[],
     win_no_prefer_redirects=False,
@@ -73,7 +77,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='battery_guardian/icon.ico' if Path('battery_guardian/icon.ico').exists() else None,
+    {icon_setting}
 )
 '''
     
