@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battery Guardian - Premium Dashboard</title>
+    
+    <!-- Distinctive Typography: Clash Display + Cabinet Grotesk -->
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@700,600,500&f[]=cabinet-grotesk@400,500,700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========================================
+           DESIGN SYSTEM - Art Deco Meets Brutalism
+           Following Frontend Design Skill Guidelines
+           ======================================== */
+        
+        :root {
+            /* Color Palette: Rich Emerald with Gold Accents */
+            --color-bg-deep: #0a0f0d;
+            --color-bg-card: #121a16;
+            --color-bg-elevated: #1a2620;
+            --color-accent-gold: #d4af37;
+            --color-accent-gold-dim: #8b7355;
+            --color-emerald: #10b981;
+            --color-emerald-glow: rgba(16, 185, 129, 0.15);
+            --color-text-primary: #f0fdf4;
+            --color-text-secondary: #86efac;
+            --color-text-muted: #4ade80;
+            --color-danger: #ef4444;
+            --color-warning: #f59e0b;
+            
+            /* Typography Scale */
+            --font-display: 'Clash Display', sans-serif;
+            --font-body: 'Cabinet Grotesk', sans-serif;
+            
+            /* Spacing */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+            --space-2xl: 5rem;
+            
+            /* Effects */
+            --shadow-glow: 0 0 60px rgba(16, 185, 129, 0.2);
+            --shadow-card: 0 4px 30px rgba(0, 0, 0, 0.5);
+            --border-accent: 1px solid var(--color-accent-gold);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg-deep);
+            color: var(--color-text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* ========================================
+           BACKGROUND: Geometric Noise Pattern
+           ======================================== */
+        
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(212, 175, 55, 0.03) 2px,
+                    rgba(212, 175, 55, 0.03) 4px
+                ),
+                radial-gradient(
+                    ellipse at 20% 30%,
+                    var(--color-emerald-glow) 0%,
+                    transparent 50%
+                ),
+                radial-gradient(
+                    ellipse at 80% 70%,
+                    rgba(212, 175, 55, 0.08) 0%,
+                    transparent 40%
+                );
+            z-index: -1;
+        }
+        
+        /* ========================================
+           LAYOUT: Asymmetric Grid
+           ======================================== */
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 80px 1fr 380px;
+            grid-template-rows: auto 1fr;
+            min-height: 100vh;
+            gap: var(--space-lg);
+            padding: var(--space-lg);
+        }
+        
+        /* ========================================
+           SIDEBAR: Brutalist Navigation
+           ======================================== */
+        
+        .sidebar {
+            grid-row: span 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-lg);
+            padding: var(--space-lg) 0;
+            background: var(--color-bg-card);
+            border: var(--border-accent);
+            clip-path: polygon(0 0, 100% 3%, 100% 97%, 0 100%);
+        }
+        
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--color-emerald), var(--color-accent-gold));
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px var(--color-emerald-glow); }
+            50% { box-shadow: 0 0 40px var(--color-emerald-glow), 0 0 60px rgba(212, 175, 55, 0.2); }
+        }
+        
+        .nav-item {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-muted);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: -16px;
+            width: 3px;
+            height: 0;
+            background: var(--color-accent-gold);
+            transition: height 0.3s ease;
+        }
+        
+        .nav-item:hover::before,
+        .nav-item.active::before {
+            height: 100%;
+        }
+        
+        .nav-item:hover,
+        .nav-item.active {
+            color: var(--color-accent-gold);
+            transform: scale(1.1);
+        }
+        
+        /* ========================================
+           HEADER: Bold Typography
+           ======================================== */
+        
+        .header {
+            grid-column: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slide-down 0.8s ease-out;
+        }
+        
+        @keyframes slide-down {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header h1 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header-meta {
+            text-align: right;
+        }
+        
+        .header-meta .time {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--color-accent-gold);
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .header-meta .date {
+            color: var(--color-text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        /* ========================================
+           MAIN CONTENT: Battery Gauge
+           ======================================== */
+        
+        .main-content {
+            grid-column: 2;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xl);
+        }
+        
+        .battery-hero {
+            background: var(--color-bg-card);
+            border: var(--border-accent);
+            padding: var(--space-2xl);
+            position: relative;
+            overflow: hidden;
+            animation: fade-in 1s ease-out 0.3s both;
+        }
+        
+        @keyframes fade-in {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .battery-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--color-accent-gold), transparent);
+        }
+        
+        .battery-gauge {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2xl);
+        }
+        
+        .gauge-circle {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+        
+        .gauge-svg {
+            transform: rotate(-90deg);
+            filter: drop-shadow(0 0 20px var(--color-emerald-glow));
+        }
+        
+        .gauge-bg {
+            fill: none;
+            stroke: var(--color-bg-elevated);
+            stroke-width: 12;
+        }
+        
+        .gauge-fill {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 12;
+            stroke-linecap: round;
+            stroke-dasharray: 565.48;
+            stroke-dashoffset: 565.48;
+            animation: gauge-fill 2s ease-out 0.5s forwards;
+        }
+        
+        @keyframes gauge-fill {
+            to { stroke-dashoffset: 141.37; } /* 75% filled */
+        }
+        
+        .gauge-value {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gauge-value .percent {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            line-height: 1;
+        }
+        
+        .gauge-value .label {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+        
+        .battery-stats {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-lg);
+        }
+        
+        .stat-item {
+            padding: var(--space-md);
+            border-left: 2px solid var(--color-bg-elevated);
+            transition: border-color 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            border-color: var(--color-accent-gold);
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .stat-value.good { color: var(--color-emerald); }
+        .stat-value.warning { color: var(--color-warning); }
+        .stat-value.danger { color: var(--color-danger); }
+        
+        /* ========================================
+           SIDEBAR PANEL: Status Cards
+           ======================================== */
+        
+        .side-panel {
+            grid-column: 3;
+            grid-row: span 2;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+            animation: slide-left 0.8s ease-out 0.5s both;
+        }
+        
+        @keyframes slide-left {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .panel-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-bg-elevated);
+            padding: var(--space-lg);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .panel-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, var(--color-emerald), var(--color-accent-gold));
+            transform: scaleX(0);
+            transition: transform 0.5s ease;
+        }
+        
+        .panel-card:hover::after {
+            transform: scaleX(1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+        
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-accent-gold);
+        }
+        
+        .card-badge {
+            font-size: 0.625rem;
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--color-emerald-glow);
+            color: var(--color-emerald);
+            border-radius: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .card-badge.warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--color-warning);
+        }
+        
+        /* Health Bar */
+        .health-bar {
+            height: 8px;
+            background: var(--color-bg-elevated);
+            margin: var(--space-md) 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-emerald), var(--color-accent-gold));
+            width: 0%;
+            animation: health-fill 1.5s ease-out 1s forwards;
+        }
+        
+        @keyframes health-fill {
+            to { width: 87%; }
+        }
+        
+        /* Activity List */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-sm);
+            border-left: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            background: var(--color-bg-elevated);
+            border-left-color: var(--color-accent-gold);
+        }
+        
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-bg-elevated);
+            color: var(--color-emerald);
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-size: 0.875rem;
+            color: var(--color-text-primary);
+        }
+        
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+        
+        /* ========================================
+           RESPONSIVE
+           ======================================== */
+        
+        @media (max-width: 1200px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .side-panel {
+                grid-column: 1;
+                grid-row: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+    
+    <div class="dashboard">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">⚡</div>
+            <div class="nav-item active">📊</div>
+            <div class="nav-item">🔋</div>
+            <div class="nav-item">⚙️</div>
+            <div class="nav-item">📈</div>
+        </nav>
+        
+        <!-- Header -->
+        <header class="header">
+            <h1>Battery Guardian</h1>
+            <div class="header-meta">
+                <div class="time" id="time">14:32</div>
+                <div class="date">January 17, 2026</div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <section class="battery-hero">
+                <div class="battery-gauge">
+                    <div class="gauge-circle">
+                        <svg class="gauge-svg" viewBox="0 0 200 200">
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#10b981"/>
+                                    <stop offset="100%" stop-color="#d4af37"/>
+                                </linearGradient>
+                            </defs>
+                            <circle class="gauge-bg" cx="100" cy="100" r="90"/>
+                            <circle class="gauge-fill" cx="100" cy="100" r="90"/>
+                        </svg>
+                        <div class="gauge-value">
+                            <span class="percent">75</span>
+                            <span class="label">Percent</span>
+                        </div>
+                    </div>
+                    
+                    <div class="battery-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Health Status</div>
+                            <div class="stat-value good">Excellent</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Cycle Count</div>
+                            <div class="stat-value">342</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Temperature</div>
+                            <div class="stat-value good">32°C</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Time Remaining</div>
+                            <div class="stat-value">4h 23m</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Side Panel -->
+        <aside class="side-panel">
+            <div class="panel-card">
+                <div class="card-header">
+                    <h3 class="card-title">Battery Health</h3>
+                    <span class="card-badge">Optimal</span>
+                </div>
+                <div class="health-bar">
+                    <div class="health-fill"></div>
+                </div>
+                <p style="font-size: 0.875rem; color: var(--color-text-muted);">
+                    Design capacity: <strong style="color: var(--color-text-primary);">87%</strong> retained
+                </p>
+            </div>
+            
+            <div class="panel-card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Activity</h3>
+                    <span class="card-badge warning">3 Events</span>
+                </div>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon">🔌</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Charging Started</div>
+                            <div class="activity-time">2 minutes ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">⚠️</div>
+                        <div class="activity-content">
+                            <div class="activity-title">High Power Draw Detected</div>
+                            <div class="activity-time">15 minutes ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">✅</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Health Check Complete</div>
+                            <div class="activity-time">1 hour ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel-card">
+                <div class="card-header">
+                    <h3 class="card-title">Quick Actions</h3>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <button style="
+                        background: linear-gradient(135deg, var(--color-emerald), #059669);
+                        border: none;
+                        padding: 0.75rem 1rem;
+                        color: white;
+                        font-family: var(--font-display);
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: transform 0.2s ease, box-shadow 0.2s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 20px rgba(16, 185, 129, 0.4)'"
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        Run Diagnostics
+                    </button>
+                    <button style="
+                        background: transparent;
+                        border: 1px solid var(--color-accent-gold);
+                        padding: 0.75rem 1rem;
+                        color: var(--color-accent-gold);
+                        font-family: var(--font-display);
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                    " onmouseover="this.style.background='var(--color-accent-gold)'; this.style.color='var(--color-bg-deep)'"
+                       onmouseout="this.style.background='transparent'; this.style.color='var(--color-accent-gold)'">
+                        Export Report
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </div>
+    
+    <script>
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            document.getElementById('time').textContent = time;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        // Animate counter
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                element.textContent = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        
+        // Animate the percentage on load
+        setTimeout(() => {
+            const percentEl = document.querySelector('.gauge-value .percent');
+            animateValue(percentEl, 0, 75, 2000);
+        }, 500);
+    </script>
+</body>
+</html>
